@@ -135,7 +135,7 @@
             }
         }
 
-        // Escuchar cambios en el estado de 'isPaused' desde otros dispositivos o pestañas
+        // Escuchar cambios en el estado de 'isPaused' desde otras pestañas
         window.addEventListener('storage', (event) => {
             if (event.key === 'isPaused') {
                 isPaused = event.newValue === 'true';  // Obtener el nuevo valor del estado
