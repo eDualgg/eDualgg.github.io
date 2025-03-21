@@ -91,7 +91,7 @@
 
     <script>
         let clockInterval;
-        let isPaused = localStorage.getItem('isPaused') === 'true';  // Obtener el estado del reloj desde localStorage
+        let isPaused = localStorage.getItem('isPaused') === 'true';  
 
         // Función para actualizar el reloj
         function updateClock() {
@@ -107,11 +107,11 @@
             document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
         }
 
-        // Función para iniciar el reloj
+        // Función para comenzar el reloj
         function startClock() {
             if (!clockInterval && !isPaused) {
                 clockInterval = setInterval(updateClock, 1000);
-                updateClock(); // Ejecutar inmediatamente la actualización de la hora
+                updateClock(); // Actualizar de inmediato
             }
         }
 
@@ -121,7 +121,7 @@
             clockInterval = null;
         }
 
-        // Función para alternar entre Pausar y Reanudar
+        // Función para cambiar el estado del reloj
         function toggleClock() {
             isPaused = !isPaused;
             localStorage.setItem('isPaused', isPaused);  // Guardar el estado en localStorage
@@ -135,10 +135,10 @@
             }
         }
 
-        // Sincronizar el estado del reloj en todas las ventanas abiertas usando el evento 'storage'
+        // Escuchar cambios en el estado de 'isPaused' desde otros dispositivos o pestañas
         window.addEventListener('storage', (event) => {
             if (event.key === 'isPaused') {
-                isPaused = event.newValue === 'true';
+                isPaused = event.newValue === 'true';  // Obtener el nuevo valor del estado
                 if (isPaused) {
                     stopClock();
                     document.getElementById('pauseButton').textContent = 'Reanudar';
@@ -149,7 +149,7 @@
             }
         });
 
-        // Iniciar el reloj y establecer el botón según el estado almacenado
+        // Inicializar el reloj según el estado almacenado en localStorage
         if (isPaused) {
             stopClock();
             document.getElementById('pauseButton').textContent = 'Reanudar';
