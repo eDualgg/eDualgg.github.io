@@ -3,62 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Informatica 7ª3ª</title>
+    <title>Reloj Universal</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 0;
+            font-family: 'Arial', sans-serif;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background: linear-gradient(135deg, #ff9a9e, #fad0c4); 
+            margin: 0;
+            background: linear-gradient(135deg, #6e7f94, #b2c1cc);
+            color: #fff;
         }
 
-        .container {
-            text-align: center;
-            background-color: rgba(255, 255, 255, 0.8); 
-            padding: 50px 30px 30px 30px; 
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
-            max-width: 90%;
-            width: 600px;
+        .clock {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
         }
 
-        video {
-            max-width: 50%; 
-            height: auto;
-            border-radius: 10px; 
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
-            margin-top: 20px;
+        .clock:hover {
+            transform: scale(1.05);
         }
 
-        h1 {
-            font-size: 2.5em;
-            color: #d32f2f; 
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); 
-            margin-bottom: 20px; 
-            margin-top: 20%; 
+        .time {
+            font-family: 'Courier New', Courier, monospace;
+            letter-spacing: 3px;
         }
 
-        p {
-            font-size: 1.1em;
-            color: #555;
-            margin-top: 20px;
-            font-style: italic;
+        .button-container {
+            display: flex;
+            justify-content: center;
         }
 
+        .btn {
+            background-color: #3498db;
+            color: white;
+            font-size: 1.2rem;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .btn:focus {
+            outline: none;
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Los Electrones son mansos panchos</h1>
-        <iframe width="482" height="557" src="https://www.youtube.com/embed/96W8xhHz25I" title="Bailalo Rocky" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-     
-        <p>OAOAOAOAOA</p>
+    <div class="clock">
+        <span class="time" id="clock"></span>
     </div>
+
+    <div class="button-container">
+        <button class="btn" id="pauseButton" onclick="toggleClock()">Pausar</button>
+    </div>
+
+    <script>
+        let clockInterval;
+        let isPaused = localStorage.getItem('isPaused') === 'true';  // Obtener el estado del reloj desde localStorage
+
+        // Función para actualizar el reloj
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getUTCHours();
+            let minutes = now.getUTCMinutes();
+            let seconds = now.getUTCSeconds();
+
+            hours = hours < 10 ? '0' + hours : hours;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // Función para iniciar el reloj
+        function startClock() {
+            if (!clockInterval && !isPaused) {
+                clockInterval = setInterval(updateClock, 1000);
+                updateClock(); // Ejecutar inmediatamente la actualización de la hora
+            }
+        }
+
+        // Función para detener el reloj
+        function stopClock() {
+            clearInterval(clockInterval);
+            clockInterval = null;
+        }
+
+        // Función para alternar entre Pausar y Reanudar
+        function toggleClock() {
+            isPaused = !isPaused;
+            localStorage.setItem('isPaused', isPaused);  // Guardar el estado en localStorage
+
+            if (isPaused) {
+                stopClock();
+                document.getElementById('pauseButton').textContent = 'Reanudar';
+            } else {
+                startClock();
+                document.getElementById('pauseButton').textContent = 'Pausar';
+            }
+        }
+
+        // Sincronizar el estado del reloj en todas las ventanas abiertas usando el evento 'storage'
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'isPaused') {
+                isPaused = event.newValue === 'true';
+                if (isPaused) {
+                    stopClock();
+                    document.getElementById('pauseButton').textContent = 'Reanudar';
+                } else {
+                    startClock();
+                    document.getElementById('pauseButton').textContent = 'Pausar';
+                }
+            }
+        });
+
+        // Iniciar el reloj y establecer el botón según el estado almacenado
+        if (isPaused) {
+            stopClock();
+            document.getElementById('pauseButton').textContent = 'Reanudar';
+        } else {
+            startClock();
+            document.getElementById('pauseButton').textContent = 'Pausar';
+        }
+    </script>
 </body>
 </html>
